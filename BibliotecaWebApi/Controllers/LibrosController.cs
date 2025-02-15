@@ -109,6 +109,47 @@ namespace BibliotecaWebApi.Controllers
         }
 
         [HttpGet]
+        [Route("/LatestBooks")]
+        public IActionResult LatestBooks()
+        {
+            var libros = (from l in _contexto.Libros
+                          join a in _contexto.Autores
+                          on l.AutorId equals a.AutorId
+                            orderby l.AnioPublicacion descending
+                            select new
+                            {
+                                l.Titulo,
+                                l.AnioPublicacion,
+                                l.Resumen,
+                                l.AutorId,
+                                Autor = a.Nombre,
+                                l.CategoriaId
+                            }).ToList();
+            return Ok(libros);
+        }
+
+        [HttpGet]
+        [Route("/GetBooksByYear")]
+        public IActionResult GetBooksByYear(int anio)
+        {
+            var libros = (from l in _contexto.Libros
+                          join a in _contexto.Autores
+                          on l.AutorId equals a.AutorId
+                          where l.AnioPublicacion == anio
+                          select new
+                          {
+                              l.Titulo,
+                              l.AnioPublicacion,
+                              l.Resumen,
+                              l.AutorId,
+                              Autor = a.Nombre,
+                              l.CategoriaId
+                          }).ToList();
+
+            return Ok(libros);
+        }
+
+        [HttpGet]
         [Route("/GetBookById")]
         public IActionResult GetBookById(int LibroId)
         {

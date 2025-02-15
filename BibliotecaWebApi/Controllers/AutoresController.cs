@@ -42,6 +42,26 @@ namespace BibliotecaWebApi.Controllers
         }
 
         [HttpGet]
+        [Route("/GetAuthorWithMostBooks")]
+        public IActionResult GetAuthorWithMostBooks()
+        {
+            var autoresConMasLibros = (from a in _contexto.Autores
+                                       join l in _contexto.Libros
+                                       on a.AutorId equals l.AutorId into librosAgrupados
+                                       select new
+                                       {
+                                           a.AutorId,
+                                           a.Nombre,
+                                           a.Nacionalidad,
+                                           CantidadLibrosPublicados = librosAgrupados.Count()
+                                       })
+                                       .OrderByDescending(a => a.CantidadLibrosPublicados)
+                                       .ToList();
+
+            return Ok(autoresConMasLibros);
+        }
+
+        [HttpGet]
         [Route("/GetAuthorById")]
         public IActionResult GetById(int AutorId)
         {
